@@ -1,0 +1,16 @@
+version: "3.5"
+networks:
+  default:
+    name: chouette
+
+services:
+  redis:
+    image: redis:5.0.5
+
+  tests:
+    build: .
+    links:
+      - redis
+    environment:
+      - PYTHONPATH=/chouette-client
+    command: ["pytest", "-s", "-vvv", "--cov", "chouette_iot_client", "--cov-report", "term-missing"]
