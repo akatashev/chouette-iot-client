@@ -1,3 +1,9 @@
+"""
+Chouette storages file.
+For now it's just a RedisStorage.
+It could be made more enterprise-y with a Storage interface, but it'll
+work for now as is.
+"""
 import json
 import logging
 import os
@@ -20,9 +26,7 @@ class StoragesFactory:
     @staticmethod
     def get_storage(storage_type: str):
         """
-        Factory method that returns an instance of Storage if it
-        can read correct environment variables and ping Redis.
-        Otherwise it returns None.
+        Generates a storage.
 
         Returns: RedisStorage instance or None if redis is not reachable.
         """
@@ -30,15 +34,7 @@ class StoragesFactory:
             redis_host = os.environ.get("REDIS_HOST", "redis")
             redis_port = int(os.environ.get("REDIS_PORT", "6379"))
             redis_storage = RedisStorage(host=redis_host, port=redis_port)
-            try:
-                redis_storage.ping()
-                return redis_storage
-            except RedisError:
-                logger.warning(
-                    "Redis %s:%s can't be pinged. Metrics WON'T be sent.",
-                    redis_host,
-                    redis_port,
-                )
+            return redis_storage
         return None
 
 

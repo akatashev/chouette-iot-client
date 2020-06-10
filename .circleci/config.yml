@@ -1,0 +1,78 @@
+version: 2.1
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - python38
+      - python37
+      - python36
+      - pypy
+      - mypy
+
+jobs:
+  mypy:
+    docker:
+      - image: circleci/python:3.8
+
+    steps:
+      - checkout
+      - run:
+          name: Install requirements
+          command: |
+            pip3 install mypy
+            pip3 install -r requirements.txt
+      - run:
+          name: Run mypy
+          command: mypy .
+
+  python38: &unit-tests-template
+    docker:
+      - image: circleci/python:3.8
+        environment:
+          PYTHONPATH: .
+          REDIS_HOST: 127.0.0.1
+
+      - image: circleci/redis:5.0.5-alpine
+    steps:
+      - checkout
+      - run:
+          name: Install requirements
+          command: |
+            pip3 install pytest pytest-cov requests-mock redis
+      - run:
+          name: Run tests
+          command: |
+            pytest -s -vvv --cov chouette --cov-report term-missing --junit-xml=test-results/pytest/results.xml
+      - store_test_results:
+          path: test-results
+
+  python37:
+    <<: *unit-tests-template
+    docker:
+      - image: circleci/python:3.7
+        environment:
+          PYTHONPATH: .
+          REDIS_HOST: 127.0.0.1
+
+      - image: circleci/redis:3.2-alpine
+
+  python36:
+    <<: *unit-tests-template
+    docker:
+      - image: circleci/python:3.6
+        environment:
+          PYTHONPATH: .
+          REDIS_HOST: 127.0.0.1
+
+      - image: circleci/redis:4.0.13-alpine
+
+  pypy:
+    <<: *unit-tests-template
+    docker:
+      - image: pypy:3.6
+        environment:
+          PYTHONPATH: .
+          REDIS_HOST: 127.0.0.1
+
+      - image: circleci/redis:5.0.5-alpine
