@@ -66,9 +66,9 @@ class RedisStorage(Redis):
         pipeline.hset(f"{self.metrics_queue}.values", key, value)
         try:
             pipeline.execute()
-        except (RedisError, OSError):
+        except (RedisError, OSError) as error:
             logger.warning(
-                "Could not store a metric %s: %s to Redis.", key, value, exc_info=True
+                "Could not store a metric %s: %s to Redis. Error: %s", key, value, error
             )
             return None
         logger.debug("Successfully stored a metric %s: %s to Redis.", key, value)

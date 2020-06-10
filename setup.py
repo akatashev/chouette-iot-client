@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="chouette-client",
+    name="chouette-iot-client",
     version="0.0.1",
     author="Artem Katashev",
     author_email="aharr@rowanleaf.net",
