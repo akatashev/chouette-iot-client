@@ -7,7 +7,6 @@ workflows:
       - python38
       - python37
       - python36
-      - pypy
       - mypy
 
 jobs:
@@ -66,13 +65,3 @@ jobs:
           REDIS_HOST: 127.0.0.1
 
       - image: circleci/redis:4.0.13-alpine
-
-  pypy:
-    <<: *unit-tests-template
-    docker:
-      - image: pypy:3.6
-        environment:
-          PYTHONPATH: .
-          REDIS_HOST: 127.0.0.1
-
-      - image: circleci/redis:5.0.5-alpine
