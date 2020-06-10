@@ -32,7 +32,9 @@ def test_timed_decorator(redis_client, use_ms, expected_value, metrics_queue):
     assert record["metric"] == "test.timed.decorator"
     assert record["type"] == "histogram"
     assert record["tags"] == {"producer": "timer"}
-    assert float("%.3f" % record["value"]) == expected_value
+    value = float("%.3f" % record["value"])
+    # Due to milliseconds calculation that can show 101 ms:
+    assert value in [expected_value, expected_value + 1]
 
 
 @pytest.mark.parametrize("use_ms, expected_value", ((True, 100), (False, 0.1)))
@@ -58,4 +60,6 @@ def test_timed_context_manager(redis_client, use_ms, expected_value, metrics_que
     assert record["metric"] == "test.timed.context_manager"
     assert record["type"] == "histogram"
     assert record["tags"] == {"producer": "timer"}
-    assert float("%.3f" % record["value"]) == expected_value
+    value = float("%.3f" % record["value"])
+    # Due to milliseconds calculation that can show 101 ms:
+    assert value in [expected_value, expected_value + 1]
