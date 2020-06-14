@@ -16,6 +16,8 @@ from chouette_iot_client import ChouetteClient
 
 # These metrics takes a float as their value:
 ChouetteClient.count(metric="my.count.metric", value=1, timestamp=time(), tags={"importance": "high"})
+ChouetteClient.increment(metric="my.count.metric", value=1)  # Exactly the same as 'count'
+ChouetteClient.decrement(metric="my.count.metric", value=1)  # Means `count` for -value
 ChouetteClient.gauge("my.gauge.metric", 1)
 ChouetteClient.histogram("my.histogram.metric", 1.5)
 ChouetteClient.rate("my.rate.metric", 1)
