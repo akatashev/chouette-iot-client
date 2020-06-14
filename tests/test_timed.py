@@ -63,4 +63,4 @@ def test_timed_context_manager(redis_client, use_ms, expected_value, metrics_que
     assert record["tags"] == {"producer": "timer"}
     value = float("%.3f" % record["value"])
     # Due to milliseconds calculation that can show 101 ms:
-    assert value in [expected_value, expected_value + 1]
+    assert value in [expected_value, expected_value + 0.01]
