@@ -50,6 +50,35 @@ def test_float_metrics(method, redis_client, metrics_queue):
     assert record["tags"] == {"producer": "test"}
 
 
+@pytest.mark.parametrize("method", (ChouetteClient.increment, ChouetteClient.decrement))
+def test_increment_decrement_metrics(redis_client, metrics_queue, method):
+    """
+    Tests 'increment' and 'decrement' methods.
+
+    'Increment' and 'decrement' are aliases for a 'count' method used in
+    DogstatsD. 'increment' sends a positive value just like 'count' does
+    while 'decrement' sends a negative value.
+
+    GIVEN: We send a value 2 by an increment or decrement method.
+    WHEN: This method is called.
+    THEN: A record with a metric name appears in a storage.
+    AND: The type of this metric is "count".
+    AND: Its value is 2 for 'increment'.
+    OR: It's value is -2 for 'decrement'.
+    """
+    expected_result = 2
+    if method.__name__ == "decrement":
+        expected_result *= -1
+    redis_client.flushall()
+    metric_name = "test.metric.count.datadogstyle"
+    execution_future = method(metric=metric_name, value=2)
+    result = execution_future.result()
+    record = json.loads(redis_client.hget(f"{metrics_queue}.values", result))
+    assert record["metric"] == metric_name
+    assert record["type"] == "count"
+    assert record["value"] == expected_result
+
+
 @pytest.mark.parametrize("value", (["a", "b", "c"], {"a", "b", "c"}))
 def test_set_metric(redis_client, value, metrics_queue):
     """

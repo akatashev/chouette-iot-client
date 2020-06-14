@@ -68,6 +68,50 @@ class ChouetteClient:
         return cls._store(to_store)
 
     @classmethod
+    def increment(
+        cls,
+        metric: str,
+        value: float,
+        timestamp: float = None,
+        tags: Dict[str, str] = None,
+    ) -> Future:
+        """
+        Another way to send a "count" metric in a DogstatsD style. Sends a
+        "count" metric with a positive value.
+        https://github.com/DataDog/dogstatsd-python/blob/master/statsd.py
+
+        Args:
+            metric: Metric name.
+            value: Metric value as a float.
+            timestamp: Metric collection timestamp.
+            tags: Metric tags as a dict.
+        Return: Future that normally contains this metric's key in a storage.
+        """
+        return cls.count(metric, value, timestamp, tags)
+
+    @classmethod
+    def decrement(
+        cls,
+        metric: str,
+        value: float,
+        timestamp: float = None,
+        tags: Dict[str, str] = None,
+    ) -> Future:
+        """
+        Another way to send a "count" metric in a DogstatsD style. Sends a
+        "count" metric with a negative value.
+        https://github.com/DataDog/dogstatsd-python/blob/master/statsd.py
+
+        Args:
+            metric: Metric name.
+            value: Metric value as a float.
+            timestamp: Metric collection timestamp.
+            tags: Metric tags as a dict.
+        Return: Future that normally contains this metric's key in a storage.
+        """
+        return cls.count(metric, -value, timestamp, tags)
+
+    @classmethod
     def gauge(
         cls,
         metric: str,

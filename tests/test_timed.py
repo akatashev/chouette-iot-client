@@ -18,6 +18,7 @@ def test_timed_decorator(redis_client, use_ms, expected_value, metrics_queue):
     AND: Its value is the expected code execution duration in seconds for
          'use_ms'=False or milliseconds for 'use_ms'=True.
     """
+
     @timed("test.timed.decorator", tags={"producer": "timer"}, use_ms=use_ms)
     def sleep():
         time.sleep(0.1)
