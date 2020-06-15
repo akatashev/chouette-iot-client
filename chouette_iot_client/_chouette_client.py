@@ -212,6 +212,20 @@ class ChouetteClient:
         return cls._store(to_store)
 
     @classmethod
+    def get_executor(cls) -> ThreadPoolExecutor:
+        """
+        Gets ThreadPoolExecutor from a dict or creates a new one for this
+        process.
+
+        Returns: ThreadPoolExecutor.
+        """
+        pid = os.getpid()
+        if pid not in cls.executors:
+            logger.debug("Creating new metrics ThreadPoolExecutor for pid %s.", pid)
+            cls.executors[pid] = ThreadPoolExecutor(thread_name_prefix="chouette-iot")
+        return cls.executors[pid]
+
+    @classmethod
     def _store(cls, metric: Dict[str, Any]) -> Future:
         """
         Tries to "send" a metric - store it to a broker.
@@ -230,23 +244,9 @@ class ChouetteClient:
             empty_future: Future = Future()
             empty_future.set_result(result=None)
             return empty_future
-        executor = cls._get_executor()
+        executor = cls.get_executor()
         future = executor.submit(cls.storage.store_metric, metric)
         return future
-
-    @classmethod
-    def _get_executor(cls) -> ThreadPoolExecutor:
-        """
-        Gets ThreadPoolExecutor from a dict or creates a new one for this
-        process.
-
-        Returns: ThreadPoolExecutor.
-        """
-        pid = os.getpid()
-        if pid not in cls.executors:
-            logger.debug("Creating new metrics ThreadPoolExecutor for pid %s.", pid)
-            cls.executors[pid] = ThreadPoolExecutor(thread_name_prefix="chouette-iot")
-        return cls.executors[pid]
 
     @staticmethod
     def _prepare_metric(**kwargs: Any) -> Dict[str, Any]:

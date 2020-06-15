@@ -16,6 +16,18 @@ def metrics_queue():
     return "chouette:metrics:raw"
 
 
+@pytest.fixture(scope="session")
+def logs_queue():
+    """
+    Logs queue name for tests.
+    That's an actual logs queue name, but the queue
+    consists of two elements:
+    1. Sorted Set with record keys named 'chouette:logs:wrapped.keys'.
+    2. Hash with actual metrics named 'chouette:logs:wrapped.values'.
+    """
+    return "chouette:logs:wrapped"
+
+
 @pytest.fixture(scope="module")
 def redis_client():
     """

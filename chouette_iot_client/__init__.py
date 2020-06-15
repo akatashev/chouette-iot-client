@@ -4,9 +4,10 @@ ChouetteClient module entry point.
 from typing import Callable, Dict
 
 from ._chouette_client import ChouetteClient
+from ._chouette_log_handler import ChouetteLogHandler
 from ._timed import TimedContentManagerDecorator
 
-__all__ = ["ChouetteClient", "timed"]
+__all__ = ["ChouetteClient", "ChouetteLogHandler", "timed"]
 
 
 def timed(metric: str, tags: Dict[str, str] = None, use_ms: bool = False) -> Callable:
